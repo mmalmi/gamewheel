@@ -174,14 +174,17 @@ body {
 
 	draw();
 
-	$(window).resize(draw);
-	$("#gameCanvas").click(function() {
+	function userInput() {
 		if (isSpinning) {
 			stopSpinning = true;
 		} else {
 			roll(initialRollSpeed, null);
 		}
-	});
+	}
+
+	$(window).resize(draw);
+	$("#gameCanvas").click(userInput);
+	$(window).keydown(userInput);
 
 </script>
 
