@@ -43,6 +43,11 @@ body {
 		"Everyone drinks" : 20.0
 	}
 
+	var totalGameScores = 0;
+	for (var game in gameList) {
+		totalGameScores += gameList[game];
+	}
+
 	var sectorColors = [
 		"#00CC00",
 		"#FF0000",
@@ -50,16 +55,25 @@ body {
 		"#009999"
 	]
 
+	var initialRollSpeed = 1/1000 + Math.random() * 1 / 5000;
+	var rollSpeedDeceleration = 1/100000000;
+
+	var isSpinning = false;
+	var stopSpinning = false;
+
+	var centerX = 0;
+	var centerY = 0;
+	var radius = 170;
+
 	var currentColor = 0;
+
+	var canvas = document.getElementById('gameCanvas');
+	var context = canvas.getContext('2d');
 
 	function nextColor() {
 		currentColor = currentColor + 1 >= sectorColors.length ? 0 : currentColor + 1;
 		return sectorColors[currentColor];
 	}
-
-	var centerX = 0;
-	var centerY = 0;
-	var radius = 170;
 
 	function setCanvasWidth() {
 		canvas.width = window.innerWidth - 20;
@@ -67,15 +81,6 @@ body {
 		centerX = canvas.width / 2;
 		centerY = canvas.height / 2;
 		radius = Math.min(canvas.width, canvas.height) / 4;
-	}
-
-	var canvas = document.getElementById('gameCanvas');
-	var context = canvas.getContext('2d');
-	setCanvasWidth();
-
-	var totalGameScores = 0;
-	for (var game in gameList) {
-		totalGameScores += gameList[game];
 	}
 
 	function drawPlayButton() {
@@ -92,11 +97,12 @@ body {
 	function drawPointer() {
 		context.beginPath();
 		context.moveTo(centerX, centerY + radius + 20);
-		context.moveTo(centerX - 10, centerY + radius + 40);
-		context.moveTo(centerX + 10, centerY + radius + 40);
+		context.lineTo(centerX - 10, centerY + radius + 40);
+		context.lineTo(centerX + 10, centerY + radius + 40);
 		context.closePath();
 		context.fillStyle = "red";
 		context.fill();
+		context.strokeStyle = "#333333";
 		context.stroke();
 	}
 
@@ -133,12 +139,6 @@ body {
 		drawPointer();
 	}
 
-	var initialRollSpeed = 1/1000 + Math.random() * 1 / 5000;
-	var rollSpeedDecrease = 1/100000;
-
-	var isSpinning = false;
-	var stopSpinning = false;
-
 	function roll(rollSpeed, startTime) {
 		if (stopSpinning) {
 			stopSpinning = false;
@@ -160,12 +160,13 @@ body {
 		context.clearRect(0, 0, canvas.width, canvas.height);
 		context.translate(canvas.width / 2, canvas.height / 2);
 		var rotation = rollSpeed * time;
-		rollSpeed -= rollSpeedDecrease;
+		rollSpeed -= rollSpeedDeceleration * time;
 		context.rotate(rotation);
 		context.translate(canvas.width / -2, canvas.height / -2);
 		drawWheel();
 		drawPlayButton();
-		//context.translate(0,0);
+		context.translate(0,0);
+		drawPointer();
 
 		requestAnimFrame(function() {
 			roll(rollSpeed, startTime);
