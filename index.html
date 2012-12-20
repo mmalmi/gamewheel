@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Onnenpyörä!</title>
+<style type="text/css">
+#gameCanvas {
+	background: #EEEEEE;
+}
+</style>
+
+<script src="jquery-1.8.3.min.js"></script>
+
+</head>
+
+<body>
+
+<canvas width="600" height="400" id="gameCanvas">
+</canvas>
+
+<script type="text/javascript">
+
+	var gameList = {
+		"CS" : 20.0,
+		"HL" : 10.0,
+		"Ricochet" : 10.0,
+		"PVK" : 10.0,
+		"Flatout" : 10.0,
+		"CoH" : 20.0,
+		"RA2" : 10.0
+	}
+
+	var sectorColors = [
+		"#00CC00",
+		"#FF0000",
+		"#FF7400",
+		"#009999"
+	]
+
+	var currentColor = 0;
+
+	function nextColor() {
+		currentColor = currentColor + 1 >= sectorColors.length ? 0 : currentColor + 1;
+		return sectorColors[currentColor];
+	}
+
+	var centerX = 0;
+	var centerY = 0;
+
+	function setCanvasWidth() {
+		canvas.width = window.innerWidth - 20;
+		canvas.height = window.innerHeight - 20;
+		centerX = canvas.width / 2;
+		centerY = canvas.height / 2;
+	}
+
+	var canvas = document.getElementById('gameCanvas');
+	var context = canvas.getContext('2d');
+	setCanvasWidth();
+	var radius = 170;
+
+	var totalGameScores = 0;
+	for (var game in gameList) {
+		totalGameScores += gameList[game];
+	}
+
+	function drawPlayButton() {
+		context.beginPath();
+		context.arc(centerX, centerY, radius / 12, 2 * Math.PI, false);
+		context.closePath();
+		context.fillStyle = "#444444";
+		context.fill();
+		context.strokeStyle = '#003300';
+		context.lineWidth = 5;
+		context.stroke();
+	}
+
+	function drawPointer() {
+		context.beginPath();
+		context.moveTo(centerX, centerY + radius + 20);
+		context.moveTo(centerX - 10, centerY + radius + 40);
+		context.moveTo(centerX + 10, centerY + radius + 40);
+		context.closePath();
+		context.fillStyle = "red";
+		context.fill();
+		context.stroke();
+	}
+
+	function drawWheel() {
+		var arcStartPoint = 0;
+		for (var game in gameList) {
+			var portion = gameList[game] / totalGameScores;
+			var arcAngle = 2 * Math.PI * portion;
+			context.beginPath();
+			context.moveTo(centerX, centerY);
+			context.arc(centerX, centerY, radius, arcStartPoint, arcAngle + arcStartPoint, false);
+			context.moveTo(centerX, centerY);
+			arcStartPoint += arcAngle;
+			context.closePath();
+			context.fillStyle = nextColor();
+			context.fill();
+			context.lineWidth = 5;
+			context.strokeStyle = '#003300';
+			context.stroke();
+			context.font = 'italic 40px Calibri';
+			context.fillStyle = "black";
+			context.fillText(game, centerX + Math.cos(arcStartPoint) * radius * 1.5, centerY + Math.sin(arcStartPoint) * radius * 1.5);
+			context.strokeStyle = "#666666";
+			context.lineWidth = 1;
+			context.strokeText(game, centerX + Math.cos(arcStartPoint) * radius * 1.5, centerY + Math.sin(arcStartPoint) * radius * 1.5);
+		}
+	}
+
+	function draw() {
+		setCanvasWidth();
+		drawWheel();
+		drawPlayButton();
+		drawPointer();
+	}
+
+	function roll() {
+		context.translate(canvas.width / 2, canvas.height / 2);
+		context.rotate(Math.PI / Math.floor(Math.random() * 7) + 3);
+		context.translate(canvas.width / -2, canvas.height / -2);
+		drawWheel();
+		drawPlayButton();
+		//context.translate(0,0);
+	}
+
+	draw();
+
+	$(window).resize(draw);
+	$("#gameCanvas").click(roll);
+
+</script>
+
+</body>
+
+</html>
