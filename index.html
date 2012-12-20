@@ -25,6 +25,13 @@ body {
 
 <script type="text/javascript">
 
+	window.requestAnimFrame = (function(callback) {
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+        function(callback) {
+          window.setTimeout(callback, 1000 / 60);
+        };
+      })();
+
 	var gameList = {
 		"CS" : 20.0,
 		"HL" : 10.0,
@@ -32,7 +39,8 @@ body {
 		"PVK" : 10.0,
 		"Flatout" : 10.0,
 		"CoH" : 20.0,
-		"RA2" : 10.0
+		"RA2" : 10.0,
+		"Everyone drinks" : 20.0
 	}
 
 	var sectorColors = [
@@ -125,20 +133,55 @@ body {
 		drawPointer();
 	}
 
-	function roll() {
+	var initialRollSpeed = 1/1000 + Math.random() * 1 / 5000;
+	var rollSpeedDecrease = 1/100000;
+
+	var isSpinning = false;
+	var stopSpinning = false;
+
+	function roll(rollSpeed, startTime) {
+		if (stopSpinning) {
+			stopSpinning = false;
+			isSpinning = false;
+			return;
+		}
+		if (rollSpeed <= 0) {
+			isSpinning = false;
+			return;
+		} else {
+			isSpinning = true;
+		}
+		if (!startTime) {
+			startTime = new Date().getTime();
+		}
+
+		var time = (new Date()).getTime() - startTime;
+
 		context.clearRect(0, 0, canvas.width, canvas.height);
 		context.translate(canvas.width / 2, canvas.height / 2);
-		context.rotate(Math.floor(Math.random() * 100));
+		var rotation = rollSpeed * time;
+		rollSpeed -= rollSpeedDecrease;
+		context.rotate(rotation);
 		context.translate(canvas.width / -2, canvas.height / -2);
 		drawWheel();
 		drawPlayButton();
 		//context.translate(0,0);
+
+		requestAnimFrame(function() {
+			roll(rollSpeed, startTime);
+		});
 	}
 
 	draw();
 
 	$(window).resize(draw);
-	$("#gameCanvas").click(roll);
+	$("#gameCanvas").click(function() {
+		if (isSpinning) {
+			stopSpinning = true;
+		} else {
+			roll(initialRollSpeed, null);
+		}
+	});
 
 </script>
 
