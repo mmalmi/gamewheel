@@ -106,8 +106,8 @@ body {
 			context.closePath();
 			context.fillStyle = nextColor();
 			context.fill();
-			context.lineWidth = 5;
-			context.strokeStyle = '#003300';
+			context.lineWidth = 4;
+			context.strokeStyle = '#333333';
 			context.stroke();
 			context.font = 'italic 40px Calibri';
 			context.fillStyle = "white";
@@ -126,8 +126,9 @@ body {
 	}
 
 	function roll() {
+		context.clearRect(0, 0, canvas.width, canvas.height);
 		context.translate(canvas.width / 2, canvas.height / 2);
-		context.rotate(Math.PI / Math.floor(Math.random() * 7) + 3);
+		context.rotate(Math.floor(Math.random() * 100));
 		context.translate(canvas.width / -2, canvas.height / -2);
 		drawWheel();
 		drawPlayButton();
