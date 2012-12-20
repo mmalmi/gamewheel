@@ -4,8 +4,13 @@
 <meta charset="UTF-8" />
 <title>Onnenpyörä!</title>
 <style type="text/css">
+
+body {
+	background: black;
+}
+
 #gameCanvas {
-	background: #EEEEEE;
+
 }
 </style>
 
@@ -46,18 +51,19 @@
 
 	var centerX = 0;
 	var centerY = 0;
+	var radius = 170;
 
 	function setCanvasWidth() {
 		canvas.width = window.innerWidth - 20;
 		canvas.height = window.innerHeight - 20;
 		centerX = canvas.width / 2;
 		centerY = canvas.height / 2;
+		radius = Math.min(canvas.width, canvas.height) / 4;
 	}
 
 	var canvas = document.getElementById('gameCanvas');
 	var context = canvas.getContext('2d');
 	setCanvasWidth();
-	var radius = 170;
 
 	var totalGameScores = 0;
 	for (var game in gameList) {
@@ -95,6 +101,7 @@
 			context.moveTo(centerX, centerY);
 			context.arc(centerX, centerY, radius, arcStartPoint, arcAngle + arcStartPoint, false);
 			context.moveTo(centerX, centerY);
+			var sectorMiddleAngle = arcStartPoint + arcAngle / 2;
 			arcStartPoint += arcAngle;
 			context.closePath();
 			context.fillStyle = nextColor();
@@ -103,11 +110,11 @@
 			context.strokeStyle = '#003300';
 			context.stroke();
 			context.font = 'italic 40px Calibri';
-			context.fillStyle = "black";
-			context.fillText(game, centerX + Math.cos(arcStartPoint) * radius * 1.5, centerY + Math.sin(arcStartPoint) * radius * 1.5);
+			context.fillStyle = "white";
+			context.fillText(game, centerX + Math.cos(sectorMiddleAngle) * radius * 1.5, centerY + Math.sin(sectorMiddleAngle) * radius * 1.5);
 			context.strokeStyle = "#666666";
 			context.lineWidth = 1;
-			context.strokeText(game, centerX + Math.cos(arcStartPoint) * radius * 1.5, centerY + Math.sin(arcStartPoint) * radius * 1.5);
+			context.strokeText(game, centerX + Math.cos(sectorMiddleAngle) * radius * 1.5, centerY + Math.sin(sectorMiddleAngle) * radius * 1.5);
 		}
 	}
 
