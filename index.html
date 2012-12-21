@@ -70,6 +70,9 @@ body {
 	var canvas = document.getElementById('gameCanvas');
 	var context = canvas.getContext('2d');
 
+	var rotatingCanvas = document.createElement('canvas');
+	var rotatingContext = rotatingCanvas.getContext('2d');
+
 	function nextColor() {
 		currentColor = currentColor + 1 >= sectorColors.length ? 0 : currentColor + 1;
 		return sectorColors[currentColor];
@@ -78,20 +81,22 @@ body {
 	function setCanvasWidth() {
 		canvas.width = window.innerWidth - 20;
 		canvas.height = window.innerHeight - 20;
+		rotatingCanvas.width = canvas.width;
+		rotatingCanvas.height = canvas.height;
 		centerX = canvas.width / 2;
 		centerY = canvas.height / 2;
 		radius = Math.min(canvas.width, canvas.height) / 4;
 	}
 
-	function drawPlayButton() {
-		context.beginPath();
-		context.arc(centerX, centerY, radius / 12, 2 * Math.PI, false);
-		context.closePath();
-		context.fillStyle = "#444444";
-		context.fill();
-		context.strokeStyle = '#003300';
-		context.lineWidth = 5;
-		context.stroke();
+	function drawWheelAxis() {
+		rotatingContext.beginPath();
+		rotatingContext.arc(centerX, centerY, radius / 12, 2 * Math.PI, false);
+		rotatingContext.closePath();
+		rotatingContext.fillStyle = "#444444";
+		rotatingContext.fill();
+		rotatingContext.strokeStyle = '#000000';
+		rotatingContext.lineWidth = 5;
+		rotatingContext.stroke();
 	}
 
 	function drawPointer() {
@@ -102,7 +107,7 @@ body {
 		context.closePath();
 		context.fillStyle = "red";
 		context.fill();
-		context.strokeStyle = "#333333";
+		context.strokeStyle = "#000000";
 		context.stroke();
 	}
 
@@ -111,31 +116,32 @@ body {
 		for (var game in gameList) {
 			var portion = gameList[game] / totalGameScores;
 			var arcAngle = 2 * Math.PI * portion;
-			context.beginPath();
-			context.moveTo(centerX, centerY);
-			context.arc(centerX, centerY, radius, arcStartPoint, arcAngle + arcStartPoint, false);
-			context.moveTo(centerX, centerY);
+			rotatingContext.beginPath();
+			rotatingContext.moveTo(centerX, centerY);
+			rotatingContext.arc(centerX, centerY, radius, arcStartPoint, arcAngle + arcStartPoint, false);
+			rotatingContext.moveTo(centerX, centerY);
 			var sectorMiddleAngle = arcStartPoint + arcAngle / 2;
 			arcStartPoint += arcAngle;
-			context.closePath();
-			context.fillStyle = nextColor();
-			context.fill();
-			context.lineWidth = 4;
-			context.strokeStyle = '#333333';
-			context.stroke();
-			context.font = 'italic 40px Calibri';
-			context.fillStyle = "white";
-			context.fillText(game, centerX + Math.cos(sectorMiddleAngle) * radius * 1.5, centerY + Math.sin(sectorMiddleAngle) * radius * 1.5);
-			context.strokeStyle = "#666666";
-			context.lineWidth = 1;
-			context.strokeText(game, centerX + Math.cos(sectorMiddleAngle) * radius * 1.5, centerY + Math.sin(sectorMiddleAngle) * radius * 1.5);
+			rotatingContext.closePath();
+			rotatingContext.fillStyle = nextColor();
+			rotatingContext.fill();
+			rotatingContext.lineWidth = 4;
+			rotatingContext.strokeStyle = '#000000';
+			rotatingContext.stroke();
+			rotatingContext.font = 'italic 40px Calibri';
+			rotatingContext.fillStyle = "white";
+			rotatingContext.fillText(game, centerX + Math.cos(sectorMiddleAngle) * radius * 1.5, centerY + Math.sin(sectorMiddleAngle) * radius * 1.5);
+			rotatingContext.strokeStyle = "#666666";
+			rotatingContext.lineWidth = 1;
+			rotatingContext.strokeText(game, centerX + Math.cos(sectorMiddleAngle) * radius * 1.5, centerY + Math.sin(sectorMiddleAngle) * radius * 1.5);
+			context.drawImage(rotatingCanvas, 0,0);
 		}
 	}
 
 	function draw() {
 		setCanvasWidth();
 		drawWheel();
-		drawPlayButton();
+		drawWheelAxis();
 		drawPointer();
 	}
 
@@ -158,14 +164,16 @@ body {
 		var time = (new Date()).getTime() - startTime;
 
 		context.clearRect(0, 0, canvas.width, canvas.height);
-		context.translate(canvas.width / 2, canvas.height / 2);
+		rotatingContext.clearRect(0, 0, canvas.width, canvas.height);
+		rotatingContext.translate(canvas.width / 2, canvas.height / 2);
 		var rotation = rollSpeed * time;
 		rollSpeed -= rollSpeedDeceleration * time;
-		context.rotate(rotation);
-		context.translate(canvas.width / -2, canvas.height / -2);
+		rotatingContext.rotate(rotation);
+		rotatingContext.translate(canvas.width / -2, canvas.height / -2);
 		drawWheel();
-		drawPlayButton();
-		context.translate(0,0);
+		drawWheelAxis();
+		rotatingContext.translate(0,0);
+		rotatingContext.restore();
 		drawPointer();
 
 		requestAnimFrame(function() {
