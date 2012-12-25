@@ -55,7 +55,10 @@ body {
 		"#009999"
 	]
 
-	var initialRollSpeed = 1/1000 + Math.random() * 1 / 2000;
+	function getRandomRollSpeed() {
+		return 1/1000 + Math.random() * 1 / 1000;
+	}
+	
 	var rollSpeedDeceleration = 1/100000000;
 
 	var isSpinning = false;
@@ -187,7 +190,7 @@ body {
 		if (isSpinning) {
 			stopSpinning = true;
 		} else {
-			roll(initialRollSpeed, null);
+			roll(getRandomRollSpeed(), null);
 		}
 	}
 
