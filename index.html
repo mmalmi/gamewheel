@@ -55,7 +55,7 @@ body {
 		"#009999"
 	]
 
-	var initialRollSpeed = 1/1000 + Math.random() * 1 / 5000;
+	var initialRollSpeed = 1/1000 + Math.random() * 1 / 2000;
 	var rollSpeedDeceleration = 1/100000000;
 
 	var isSpinning = false;
@@ -120,7 +120,7 @@ body {
 			rotatingContext.moveTo(centerX, centerY);
 			rotatingContext.arc(centerX, centerY, radius, arcStartPoint, arcAngle + arcStartPoint, false);
 			rotatingContext.moveTo(centerX, centerY);
-			var textAngle = arcStartPoint + 0.02;
+			var textAngle = arcStartPoint;
 			arcStartPoint += arcAngle;
 			rotatingContext.closePath();
 			rotatingContext.fillStyle = nextColor();
@@ -134,7 +134,7 @@ body {
 			rotatingContext.rotate(Math.PI + textAngle);
 			rotatingContext.font = '35px Calibri';
 			rotatingContext.fillStyle = "black";
-			rotatingContext.fillText(game.toUpperCase(), 5-radius, 0);
+			rotatingContext.fillText(game.toUpperCase(), 5-radius, -4);
 			rotatingContext.restore();
 			context.drawImage(rotatingCanvas, 0,0);
 		}
