@@ -85,7 +85,7 @@ body {
 		rotatingCanvas.height = canvas.height;
 		centerX = canvas.width / 2;
 		centerY = canvas.height / 2;
-		radius = Math.min(canvas.width, canvas.height) / 4;
+		radius = Math.min(canvas.width, canvas.height) * 2 / 5;
 	}
 
 	function drawWheelAxis() {
@@ -120,7 +120,7 @@ body {
 			rotatingContext.moveTo(centerX, centerY);
 			rotatingContext.arc(centerX, centerY, radius, arcStartPoint, arcAngle + arcStartPoint, false);
 			rotatingContext.moveTo(centerX, centerY);
-			var sectorMiddleAngle = arcStartPoint + arcAngle / 2;
+			var textAngle = arcStartPoint + 0.02;
 			arcStartPoint += arcAngle;
 			rotatingContext.closePath();
 			rotatingContext.fillStyle = nextColor();
@@ -128,12 +128,14 @@ body {
 			rotatingContext.lineWidth = 4;
 			rotatingContext.strokeStyle = '#000000';
 			rotatingContext.stroke();
-			rotatingContext.font = 'italic 40px Calibri';
-			rotatingContext.fillStyle = "white";
-			rotatingContext.fillText(game, centerX + Math.cos(sectorMiddleAngle) * radius * 1.5, centerY + Math.sin(sectorMiddleAngle) * radius * 1.5);
-			rotatingContext.strokeStyle = "#666666";
-			rotatingContext.lineWidth = 1;
-			rotatingContext.strokeText(game, centerX + Math.cos(sectorMiddleAngle) * radius * 1.5, centerY + Math.sin(sectorMiddleAngle) * radius * 1.5);
+			
+			rotatingContext.save();
+			rotatingContext.translate(centerX,centerY);
+			rotatingContext.rotate(Math.PI + textAngle);
+			rotatingContext.font = '35px Calibri';
+			rotatingContext.fillStyle = "black";
+			rotatingContext.fillText(game.toUpperCase(), 5-radius, 0);
+			rotatingContext.restore();
 			context.drawImage(rotatingCanvas, 0,0);
 		}
 	}
@@ -172,8 +174,6 @@ body {
 		rotatingContext.translate(canvas.width / -2, canvas.height / -2);
 		drawWheel();
 		drawWheelAxis();
-		rotatingContext.translate(0,0);
-		rotatingContext.restore();
 		drawPointer();
 
 		requestAnimFrame(function() {
